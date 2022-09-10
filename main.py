@@ -1,5 +1,7 @@
 from app import create_app
 from config import Config
+from flask_sqlalchemy import SQLAlchemy
+ 
 
 app = create_app(Config)
 
