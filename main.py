@@ -5,4 +5,4 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = create_app(Config)
 
-app.run(port=5500)
+app.run(port=5500, debug=True)
