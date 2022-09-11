@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 
 
 db = SQLAlchemy()
-migrate = Migrate(db, render_as_batch=True)
+migrate = Migrate(render_as_batch=True)
 
 def create_app(config_class=Config):
     app = Flask(__name__)
