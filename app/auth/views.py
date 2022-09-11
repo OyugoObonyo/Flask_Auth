@@ -15,11 +15,12 @@ def register():
             "Message": "User already exists"
         }, 400
     user = User(
-        email =data.get('email')
+        email =data.get('email'),
+        password=data.get('password')
     )
-    user.set_password(data.get('password'))
     db.session.add(user)
     db.session.commit()
+    print(user.password)
     return {
         "Status": "OK",
         "Message": "User successfully registered"
