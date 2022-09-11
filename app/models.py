@@ -12,12 +12,17 @@ class User(db.Model):
     reports = db.relationship('Report', backref='reporter', lazy=True)
     posts = db.relationship('Post', backref='author', lazy=True)
 
+    def __init__(self, email, password):
+        self.email = email
+        self.password_hash = self.set_password(password)
+
     @property
     def password(self):
         raise AttributeError('Attribute not accessible')
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        password_hash = generate_password_hash(password)
+        return password_hash
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -46,3 +51,21 @@ class User(db.Model):
     
     def __repr__(self):
         return f"{self.email}"
+
+
+class BlacklistedToken(db.Model):
+    """
+    Token Model for storing JWT tokens
+    """
+    __tablename__ = 'blacklist_tokens'
+
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(500), unique=True, nullable=False)
+    blacklisted_on = db.Column(db.DateTime, nullable=False)
+
+    def __init__(self, token):
+        self.token = token
+        self.blacklisted_on = datetime.datetime.now()
+
+    def __repr__(self):
+        return f'{self.token}'
