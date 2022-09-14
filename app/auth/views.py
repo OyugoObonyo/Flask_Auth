@@ -1,7 +1,6 @@
-from base64 import decode
 from app import db
 from app.auth import bp
-from app.models import User
+from app.models import BlacklistedToken, User
 from flask import request
 
 
@@ -20,11 +19,10 @@ def register():
     )
     db.session.add(user)
     db.session.commit()
-    print(user.password)
     return {
         "Status": "OK",
         "Message": "User successfully registered"
-    }, 200
+    }, 201
 
 
 @bp.route("/login", methods=['POST'])
@@ -52,3 +50,31 @@ def login():
             "Status": "error",
             "Message": "Log in Attempt failed, please try again"
         }, 400
+
+
+@bp.route("/logout", methods=['POST'])
+def logout():
+    auth_token = request.headers.get('Authorization')
+    if auth_token is None:
+        return {
+            "Status": "error",
+            "Message": "Please provide a valid authentication token"
+        }
+    resp = User.decode_auth_token(auth_token)
+    if not isinstance(resp, str):
+        blacklisted_token = BlacklistedToken(auth_token)
+        db.session.add(blacklisted_token)
+        db.session.commit()
+        return {
+            "Status": "OK",
+            "Message": "User logged out successfully"
+        }, 200
+    return {
+        "Status": "OK",
+        "Message": resp
+    }
+
+
+@bp.route('/me')
+def user_details():
+    pass

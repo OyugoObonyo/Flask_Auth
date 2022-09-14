@@ -1,2 +1,4 @@
 - Check out 40* status codes 
 - Change Primary key in database models to uuid from id
+- Build up Test suite
+- Making atomic database transactions in flask
