@@ -1,9 +1,12 @@
-from base64 import decode
 from app import db
 from app.auth import bp
 from app.models import User
 from flask import request
-
+from flask_jwt_extended import (
+    create_access_token,
+    get_jwt_identity,
+    jwt_required
+)
 
 @bp.route("/register", methods=['POST'])
 def register():
@@ -41,7 +44,7 @@ def login():
             "Status": "error",
             "Message": "Invalid username or password"
         }, 400
-    token = user.encode_auth_token(user.id)
+    token = create_access_token(identity=user.id)
     if token:
         return {
             "Status": "OK",
@@ -52,3 +55,14 @@ def login():
             "Status": "error",
             "Message": "Log in Attempt failed, please try again"
         }, 400
+
+
+@bp.route("/me")
+@jwt_required()
+def get_current_user():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    return {
+        "id": user.id,
+        "email": user.email
+    }, 200
