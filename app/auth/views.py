@@ -1,12 +1,13 @@
 from app import db
 from app.auth import bp
 from app.models import User
-from flask import request
+from flask import jsonify, request
 from flask_jwt_extended import (
     create_access_token,
-    get_jwt_identity,
+    create_refresh_token,
     jwt_required,
-    get_jwt
+    get_jwt,
+    get_jwt_identity
 )
 
 @bp.route("/register", methods=['POST'])
@@ -24,12 +25,10 @@ def register():
     )
     db.session.add(user)
     db.session.commit()
-    print(user.password)
     return {
         "Status": "OK",
         "Message": "User successfully registered"
     }, 200
-
 
 @bp.route("/login", methods=['POST'])
 def login():
@@ -46,18 +45,25 @@ def login():
             "Message": "Invalid username or password"
         }, 401
     claim = {"email": user.email, "id": user.id}
-    token = create_access_token(identity=user.id, additional_claims=claim)
+    access_token = create_access_token(identity=user.id, additional_claims=claim)
+    refresh_token = create_refresh_token(identity=user.id, additional_claims=claim)
     return {
-        "Status": "OK",
-        "Token": token
-    }, 200
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }
 
-
+@bp.route("/refresh", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify(access_token=access_token)
 
 @bp.route("/me")
 @jwt_required()
 def get_current_user():
     current_user = get_jwt()
+    print(current_user)
     return {
         "id": current_user.get("id"),
         "email": current_user.get("email")
