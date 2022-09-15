@@ -1,8 +1,6 @@
-import os
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
-import jwt
 
 
 class User(db.Model):
@@ -25,31 +23,6 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def encode_auth_token(self, user_id):
-        payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=30),
-            'iat': datetime.datetime.utcnow(),
-            'sub': user_id
-        }
-        return jwt.encode(
-            payload,
-            os.environ.get('SECRET_KEY'),
-            algorithm='HS256'
-        )
-
-    @staticmethod
-    def decode_auth_token(auth_token):
-        try:
-            payload = jwt.decode(auth_token, os.environ.get('SECRET_KEY'), algorithms=['HS256'])
-            is_blacklisted = BlacklistedToken.is_blacklisted(auth_token)
-            if is_blacklisted:
-                return 'Token blacklisted. Log in again'
-            return payload['sub']
-        except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
-        except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again.'
-    
     def __repr__(self):
         return f"{self.email}"
 
