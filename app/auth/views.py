@@ -5,7 +5,8 @@ from flask import request
 from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
-    jwt_required
+    jwt_required,
+    get_jwt
 )
 
 @bp.route("/register", methods=['POST'])
@@ -43,26 +44,21 @@ def login():
         return {
             "Status": "error",
             "Message": "Invalid username or password"
-        }, 400
-    token = create_access_token(identity=user.id)
-    if token:
-        return {
-            "Status": "OK",
-            "Token": token
-        }, 200
-    else:
-        return {
-            "Status": "error",
-            "Message": "Log in Attempt failed, please try again"
-        }, 400
+        }, 401
+    claim = {"email": user.email, "id": user.id}
+    token = create_access_token(identity=user.id, additional_claims=claim)
+    return {
+        "Status": "OK",
+        "Token": token
+    }, 200
+
 
 
 @bp.route("/me")
 @jwt_required()
 def get_current_user():
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
+    current_user = get_jwt()
     return {
-        "id": user.id,
-        "email": user.email
+        "id": current_user.get("id"),
+        "email": current_user.get("email")
     }, 200
