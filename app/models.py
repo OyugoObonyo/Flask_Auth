@@ -27,7 +27,7 @@ class User(db.Model):
 
     def encode_auth_token(self, user_id):
         payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=500),
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=30),
             'iat': datetime.datetime.utcnow(),
             'sub': user_id
         }
@@ -41,7 +41,7 @@ class User(db.Model):
     def decode_auth_token(auth_token):
         try:
             payload = jwt.decode(auth_token, os.environ.get('SECRET_KEY'), algorithms=['HS256'])
-            is_blacklisted = BlacklistedToken.check_blacklist(auth_token)
+            is_blacklisted = BlacklistedToken.is_blacklisted(auth_token)
             if is_blacklisted:
                 return 'Token blacklisted. Log in again'
             return payload['sub']
@@ -69,7 +69,7 @@ class BlacklistedToken(db.Model):
         self.blacklisted_on = datetime.datetime.now()
 
     @staticmethod
-    def check_blacklist(auth_token):
+    def is_blacklisted(auth_token):
         blacklisted_token = BlacklistedToken.query.filter_by(token=str(auth_token)).first()
         return blacklisted_token is not None
 
