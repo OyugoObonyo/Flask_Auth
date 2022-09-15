@@ -2,6 +2,7 @@ from app import db
 from app.auth import bp
 from app.models import BlacklistedToken, User
 from flask import request
+from utils.tokens import encode_auth_token, decode_auth_token
 
 
 @bp.route("/register", methods=['POST'])
@@ -39,7 +40,7 @@ def login():
             "Status": "error",
             "Message": "Invalid username or password"
         }, 400
-    token = user.encode_auth_token(user.id)
+    token = encode_auth_token(user.id)
     if token:
         return {
             "Status": "OK",
@@ -60,7 +61,7 @@ def logout():
             "Status": "error",
             "Message": "Please provide a valid authentication token"
         }
-    resp = User.decode_auth_token(auth_token)
+    resp = decode_auth_token(auth_token)
     if not isinstance(resp, str):
         blacklisted_token = BlacklistedToken(auth_token)
         db.session.add(blacklisted_token)
@@ -77,4 +78,14 @@ def logout():
 
 @bp.route('/me')
 def user_details():
-    pass
+    auth_token = request.headers.get('Authorization')
+    if auth_token is None:
+        return {
+            "Status": "error",
+            "Message": "Please provide a valid authentication token"
+        }
+    current_user_id = User.decode_auth_token(auth_token)
+    return {
+        "username": current_user_id,
+        "email": current_user_id
+    }, 200
