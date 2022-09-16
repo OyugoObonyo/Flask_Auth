@@ -26,4 +26,5 @@ def decode_auth_token(auth_token):
     except jwt.ExpiredSignatureError:
         return 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
+        print('AUTH_TOKEN IS: ', auth_token)
         return 'Invalid token. Please log in again.'
