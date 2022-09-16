@@ -55,12 +55,13 @@ def login():
 
 @bp.route("/logout", methods=['POST'])
 def logout():
-    auth_token = request.headers.get('Authorization')
-    if auth_token is None:
+    auth_header = request.headers.get('Authorization')
+    if auth_header is None:
         return {
             "Status": "error",
             "Message": "Please provide a valid authentication token"
         }
+    auth_token = auth_header.split(" ")[1]
     resp = decode_auth_token(auth_token)
     if not isinstance(resp, str):
         blacklisted_token = BlacklistedToken(auth_token)
@@ -78,14 +79,16 @@ def logout():
 
 @bp.route('/me')
 def user_details():
-    auth_token = request.headers.get('Authorization')
-    if auth_token is None:
+    auth_header = request.headers.get('Authorization')
+    if auth_header is None:
         return {
             "Status": "error",
             "Message": "Please provide a valid authentication token"
         }
-    current_user_id = User.decode_auth_token(auth_token)
+    auth_token = auth_header.split(" ")[1]
+    current_user_id = decode_auth_token(auth_token)
+    user = User.query.get(current_user_id)
     return {
-        "username": current_user_id,
-        "email": current_user_id
+        "username": user.id,
+        "email": user.email
     }, 200
