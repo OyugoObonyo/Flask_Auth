@@ -86,9 +86,14 @@ def user_details():
             "Message": "Please provide a valid authentication token"
         }
     auth_token = auth_header.split(" ")[1]
-    current_user_id = decode_auth_token(auth_token)
-    user = User.query.get(current_user_id)
+    resp = decode_auth_token(auth_token)
+    if isinstance(resp, int):
+        user = User.query.get(resp)
+        return {
+            "username": user.id,
+            "email": user.email
+        }, 200
     return {
-        "username": user.id,
-        "email": user.email
-    }, 200
+        "Status": "error",
+        "Message": resp
+    }, 400
