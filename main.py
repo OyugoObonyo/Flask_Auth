@@ -1,8 +1,6 @@
 from app import create_app
-from config import Config
-from flask_sqlalchemy import SQLAlchemy
- 
+from config import DevelopmentConfig
 
-app = create_app(Config)
+app = create_app(config_class=DevelopmentConfig)
 
 app.run(port=5500, debug=True)
