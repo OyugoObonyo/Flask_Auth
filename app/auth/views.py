@@ -2,7 +2,7 @@ from app import db
 from app.auth import bp
 from app.models import BlacklistedToken, User
 from flask import request
-from utils.tokens import encode_auth_token, decode_auth_token
+from app.utils.tokens import encode_auth_token, decode_auth_token
 
 
 @bp.route("/register", methods=['POST'])
