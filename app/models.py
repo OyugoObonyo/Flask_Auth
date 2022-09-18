@@ -14,14 +14,14 @@ class User(db.Model):
 
     @property
     def password(self):
-        raise AttributeError('Attribute not accessible')
-
-    def set_password(self, password):
-        password_hash = generate_password_hash(password)
-        return password_hash
+        raise AttributeError('Password not accessible')
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def set_password(self, password):
+        password_hash = generate_password_hash(password)
+        return password_hash
 
     def __repr__(self):
         return f"{self.email}"
