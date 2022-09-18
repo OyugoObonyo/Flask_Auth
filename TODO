@@ -1,4 +1,9 @@
-- Check out 40* status codes 
 - Change Primary key in database models to uuid from id
 - Build up Test suite (nox, branch coverage, etc)
 - Making atomic database transactions in flask
+- Leveraging Pulumi as Infrastructure-as-code
+- Add username field in user model
+- Handling Password and email validation
+- Refactor DB
+- Refactor Models
+- Check Nexus Connect Code on client_fixture
