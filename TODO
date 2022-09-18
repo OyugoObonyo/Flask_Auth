@@ -7,4 +7,7 @@
 - Refactor DB
 - Refactor Models
 - Check Nexus Connect Code on client_fixture
-- Add save() method to User model
+- Add save() method to User model AND CREATED_AT Fields - Match fields with fields in django application
+- Revisit Tokens 
+- Check out flask-praetorian
+- Flask HTTPAuth
