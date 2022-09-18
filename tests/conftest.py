@@ -1,5 +1,5 @@
-from app import create_app, db
-from app.models import User
+from app import create_app
+from app import db as _db
 from config import TestingConfig
 import pytest
 
@@ -8,7 +8,6 @@ import pytest
 def app():
     app = create_app(config_class=TestingConfig)
     return app
-
 
 @pytest.fixture(scope="session")
 def app_client():
@@ -20,13 +19,8 @@ def app_client():
     ctx.pop()
 
 @pytest.fixture(scope="session")
-def app_db():
-    db.create_all()
-    user = User(
-        email='user@mail.com',
-        password='user_password'
-    )
-    db.session.add(user)
-    db.session.commit()
-    yield db
-    db.drop_all()
+def db():
+    _db.create_all()
+    yield _db
+    _db.session.close()
+    _db.drop_all()
