@@ -1,6 +1,7 @@
 from app import create_app
 from app import db as _db
 from config import TestingConfig
+from app.models import User
 import os
 import pytest
 
@@ -12,17 +13,31 @@ def app():
     return app
 
 @pytest.fixture(scope="session")
-def app_client(app):
-    client = app.test_client()
-    ctx = app.app_context()
-    ctx.push()
-    yield client
-    ctx.pop()
-
-@pytest.fixture(scope="session")
 def db(app):
     _db.app = app 
     _db.create_all()
     yield _db
     _db.session.close()
     _db.drop_all()
+
+@pytest.fixture(scope="session")
+def client(app):
+    client = app.test_client()
+    ctx = app.app_context()
+    ctx.push()
+    _db.create_all()
+    yield client
+    ctx.pop()
+    _db.session.close()
+    _db.drop_all()
+
+@pytest.fixture(scope="session")
+def user(db):
+    _user = User(
+        email='user@mail.com',
+        password='user_password'
+    )
+    db.session.add(_user)
+    db.session.commit()
+    retrieved_user = User.query.filter_by(email=_user.email).first()
+    return retrieved_user
