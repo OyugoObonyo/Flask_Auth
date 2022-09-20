@@ -13,14 +13,12 @@ def test_user_model_setup():
         assert user.password
 
 
-def test_save_user_to_db(db):
-    user = User(
-        email='user@mail.com',
-        password='user_password'
-    )
-    db.session.add(user)
-    db.session.commit()
-    retrieved_user = User.query.filter_by(email=user.email).first()
-    assert retrieved_user.email == user.email
+def test_save_user_to_db(user):
+    assert user.email == 'user@mail.com'
     with pytest.raises(AttributeError):
-        assert retrieved_user.password
+        assert user.password
+
+def test_user_password(user):
+    assert user.check_password('user_passworrd') is False
+    assert user.check_password('user_password') is True
+
