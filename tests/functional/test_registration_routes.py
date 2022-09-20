@@ -36,6 +36,6 @@ def test_register_already_existing_user(client, db):
         "email" : "user21@mail.com",
         "password": "password"
     })
-    assert response.status_code == 201
+    assert response.status_code == 400
     assert response.json["Message"] == "User already exists"
     assert response.json["Status"] == "error"
