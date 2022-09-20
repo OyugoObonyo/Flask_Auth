@@ -8,6 +8,14 @@ from app.utils.tokens import encode_auth_token, decode_auth_token
 @bp.route("/register", methods=['POST'])
 def register():
     data = request.get_json()
+    try:
+        email = data["email"]
+        password = data["password"]
+    except KeyError:
+        return {
+            "Status": "error",
+            "Message": "Email or password cannot be blank"
+        }, 400
     user = User.query.filter_by(email=data.get('email')).first()
     if user is not None:
         return {
@@ -15,8 +23,8 @@ def register():
             "Message": "User already exists"
         }, 400
     user = User(
-        email =data.get('email'),
-        password=data.get('password')
+        email = email,
+        password= password
     )
     db.session.add(user)
     db.session.commit()
