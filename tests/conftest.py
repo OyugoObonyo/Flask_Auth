@@ -31,7 +31,7 @@ def client(app):
     _db.session.close()
     _db.drop_all()
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def user(db):
     _user = User(
         email='user@mail.com',
@@ -40,4 +40,6 @@ def user(db):
     db.session.add(_user)
     db.session.commit()
     retrieved_user = User.query.filter_by(email=_user.email).first()
-    return retrieved_user
+    yield retrieved_user
+    db.session.delete(retrieved_user)
+    db.session.commit()
