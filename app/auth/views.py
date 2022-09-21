@@ -68,7 +68,7 @@ def logout():
         return {
             "Status": "error",
             "Message": "Please provide a valid authentication token"
-        }
+        }, 400
     auth_token = auth_header.split(" ")[1]
     resp = decode_auth_token(auth_token)
     if not isinstance(resp, str):
