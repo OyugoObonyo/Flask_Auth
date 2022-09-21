@@ -1,5 +1,3 @@
-from app.models import User
-
 def test_full_registration(client):
     response = client.post("/api/auth/register", json={
         "email" : "user2@mail.com",
@@ -25,16 +23,10 @@ def test_register_without_password(client):
     assert response.json["Message"] == "Email or password cannot be blank"
     assert response.json["Status"] == "error"
 
-def test_register_already_existing_user(client, db):
-    user = User(
-        email="user21@mail.com",
-        password="password"
-    )
-    db.session.add(user)
-    db.session.commit()
+def test_register_already_existing_user(client, user):
     response = client.post("/api/auth/register", json={
-        "email" : "user21@mail.com",
-        "password": "password"
+        "email" : "user@mail.com",
+        "password": "user_password"
     })
     assert response.status_code == 400
     assert response.json["Message"] == "User already exists"
