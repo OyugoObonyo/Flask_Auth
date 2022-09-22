@@ -68,8 +68,14 @@ def logout():
         return {
             "Status": "error",
             "Message": "Please provide a valid authentication token"
-        }, 400
-    auth_token = auth_header.split(" ")[1]
+        }, 401
+    try:
+        auth_token = auth_header.split(" ")[1]
+    except IndexError:
+        return {
+            "Status": "error",
+            "Message": "Use a valid naming convention for the Authorization header"
+        }, 401
     resp = decode_auth_token(auth_token)
     if not isinstance(resp, str):
         blacklisted_token = BlacklistedToken(auth_token)
@@ -80,9 +86,9 @@ def logout():
             "Message": "User logged out successfully"
         }, 200
     return {
-        "Status": "OK",
+        "Status": "error",
         "Message": resp
-    }
+    }, 400
 
 
 @bp.route('/me')
@@ -92,7 +98,7 @@ def user_details():
         return {
             "Status": "error",
             "Message": "Please provide a valid authentication token"
-        }
+        }, 401
     auth_token = auth_header.split(" ")[1]
     resp = decode_auth_token(auth_token)
     if isinstance(resp, int):
