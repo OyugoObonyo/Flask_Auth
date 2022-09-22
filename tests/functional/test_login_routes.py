@@ -50,3 +50,4 @@ def test_login_without_email(client):
     assert response.json["Message"] == "Invalid username or password"
     with pytest.raises(KeyError):
         assert response.json["Token"]
+
