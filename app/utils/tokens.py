@@ -21,10 +21,9 @@ def decode_auth_token(auth_token):
         payload = jwt.decode(auth_token, os.environ.get('SECRET_KEY'), algorithms=['HS256'])
         is_blacklisted = BlacklistedToken.is_blacklisted(auth_token)
         if is_blacklisted:
-            return 'Session expired. Please log in again'
+            return 'Token expired. Please log in again'
         return payload['sub']
     except jwt.ExpiredSignatureError:
         return 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
-        print('AUTH_TOKEN IS: ', auth_token)
-        return 'Invalid token. Please log in again.'
+        return 'Invalid token'
