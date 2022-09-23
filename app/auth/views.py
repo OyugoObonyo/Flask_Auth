@@ -37,28 +37,25 @@ def register():
 @bp.route("/login", methods=['POST'])
 def login():
     data = request.get_json()
-    if data is None:
+    try:
+        email = data["email"]
+        password = data["password"]
+    except KeyError:
         return {
             "Status": "error",
-            "Message": "username or password cannot be blank"
+            "Message": "Email or password cannot be blank"
         }, 400
-    user = User.query.filter_by(email=data.get('email')).first()
-    if user is None or not user.check_password(data.get('password')):
+    user = User.query.filter_by(email=email).first()
+    if user is None or not user.check_password(password):
         return {
             "Status": "error",
             "Message": "Invalid username or password"
         }, 400
     token = encode_auth_token(user.id)
-    if token:
-        return {
-            "Status": "OK",
-            "Token": token
-        }, 200
-    else:
-        return {
-            "Status": "error",
-            "Message": "Log in Attempt failed, please try again"
-        }, 400
+    return {
+        "Status": "OK",
+        "Token": token
+    }, 200
 
 
 @bp.route("/logout", methods=['POST'])
@@ -99,12 +96,18 @@ def user_details():
             "Status": "error",
             "Message": "Please provide a valid authentication token"
         }, 401
-    auth_token = auth_header.split(" ")[1]
+    try:
+        auth_token = auth_header.split(" ")[1]
+    except IndexError:
+        return {
+            "Status": "error",
+            "Message": "Use a valid naming convention for the Authorization header"
+        }, 401
     resp = decode_auth_token(auth_token)
     if isinstance(resp, int):
         user = User.query.get(resp)
         return {
-            "username": user.id,
+            "id": user.id,
             "email": user.email
         }, 200
     return {
