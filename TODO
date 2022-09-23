@@ -11,3 +11,4 @@
 - Revisit Tokens 
 - Check out flask-praetorian
 - Flask HTTPAuth
+- Suppressing warnings when running pytest suite
