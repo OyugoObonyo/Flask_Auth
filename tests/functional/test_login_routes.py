@@ -9,6 +9,12 @@ def test_full_login(client, user):
     assert response.json["Status"] == "OK"
     assert response.json["Token"] is not None
 
+def test__login_without_username_and_password(client):
+    response = client.post("/api/auth/login", json={})
+    assert response.status_code == 400
+    assert response.json["Status"] == "error"
+    assert response.json["Message"] == "Email or password cannot be blank"
+    
 def test_login_with_inexistent_email(client):
     response = client.post("/api/auth/login", json = {
         "email" : "user1@mail.com",
@@ -37,7 +43,7 @@ def test_login_without_password(client):
     })
     assert response.status_code == 400
     assert response.json["Status"] == "error"
-    assert response.json["Message"] == "Invalid username or password"
+    assert response.json["Message"] == "Email or password cannot be blank"
     with pytest.raises(KeyError):
         assert response.json["Token"]
 
@@ -47,7 +53,6 @@ def test_login_without_email(client):
     })
     assert response.status_code == 400
     assert response.json["Status"] == "error"
-    assert response.json["Message"] == "Invalid username or password"
+    assert response.json["Message"] == "Email or password cannot be blank"
     with pytest.raises(KeyError):
         assert response.json["Token"]
-
