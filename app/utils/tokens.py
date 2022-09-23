@@ -23,7 +23,5 @@ def decode_auth_token(auth_token):
         if is_blacklisted:
             return 'Token expired. Please log in again'
         return payload['sub']
-    except jwt.ExpiredSignatureError:
-        return 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
         return 'Invalid token'
