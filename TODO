@@ -2,8 +2,6 @@
 - Making atomic database transactions in flask
 - Leveraging Pulumi as Infrastructure-as-code
 - Handling Password and email validation
-- Refactor DB
-- Refactor Models
 - Check Nexus Connect Code on client_fixture
 - Add save() method to User model AND CREATED_AT Fields - Match fields with fields in django application
 - Revisit Tokens 
