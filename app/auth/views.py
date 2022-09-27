@@ -11,6 +11,7 @@ def register():
     try:
         email = data["email"]
         password = data["password"]
+        username = data["username"]
     except KeyError:
         return {
             "Status": "error",
@@ -24,7 +25,8 @@ def register():
         }, 400
     user = User(
         email = email,
-        password= password
+        password= password,
+        username=username
     )
     db.session.add(user)
     db.session.commit()
