@@ -15,7 +15,7 @@ def register():
     except KeyError:
         return {
             "Status": "error",
-            "Message": "Email or password cannot be blank"
+            "Message": "Email, username or password cannot be blank"
         }, 400
     user = User.query.filter_by(email=data.get('email')).first()
     if user is not None:
@@ -110,7 +110,8 @@ def user_details():
         user = User.query.get(resp)
         return {
             "id": user.id,
-            "email": user.email
+            "email": user.email,
+            "username":user.username
         }, 200
     return {
         "Status": "error",
