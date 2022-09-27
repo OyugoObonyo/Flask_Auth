@@ -1,6 +1,7 @@
 def test_full_logout(client, user):
     login_response = client.post("/api/auth/login", json = {
         "email" : "user@mail.com",
+        "username": "username",
         "password": "user_password"
     })
     token = login_response.json["Token"]
@@ -21,6 +22,7 @@ def test_logout_without_token(client):
 def test_logout_with_invalid_header(client, user):
     login_response = client.post("/api/auth/login", json = {
         "email" : "user@mail.com",
+        "uername": "username",
         "password": "user_password"
     })
     token = login_response.json["Token"]
@@ -44,6 +46,7 @@ def test_logout_with_invalid_token(client):
 def test_logout_with_expired_token(client, user):
     login_response = client.post("/api/auth/login", json = {
         "email" : "user@mail.com",
+        "username": "username",
         "password": "user_password"
     })
     token = login_response.json["Token"]

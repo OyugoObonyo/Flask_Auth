@@ -35,6 +35,7 @@ def client(app):
 def user(db):
     _user = User(
         email='user@mail.com',
+        username='username',
         password='user_password'
     )
     db.session.add(_user)

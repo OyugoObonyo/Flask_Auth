@@ -5,7 +5,8 @@ import pytest
 def test_user_model_setup():
     user = User(
         email='user@mail.com',
-        password='user_password'
+        password='user_password',
+        username="username"
     )
     assert str(user) == user.email
     assert user.email == 'user@mail.com'

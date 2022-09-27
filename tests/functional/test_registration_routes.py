@@ -1,6 +1,7 @@
 def test_full_registration(client):
     response = client.post("/api/auth/register", json={
         "email" : "user2@mail.com",
+        "username": "test_username",
         "password": "password"
     })
     assert response.status_code == 201
@@ -26,6 +27,7 @@ def test_register_without_password(client):
 def test_register_already_existing_user(client, user):
     response = client.post("/api/auth/register", json={
         "email" : "user@mail.com",
+        "username": "username",
         "password": "user_password"
     })
     assert response.status_code == 400
