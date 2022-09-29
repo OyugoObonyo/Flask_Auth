@@ -2,6 +2,11 @@ from app import db
 from app.auth import bp
 from app.models import BlacklistedToken, User
 from flask import request
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    jwt_required
+)
 from app.utils.tokens import encode_auth_token, decode_auth_token
 
 
