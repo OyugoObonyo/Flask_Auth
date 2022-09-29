@@ -5,6 +5,7 @@ from flask import request
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
+    get_jwt_identity,
     jwt_required
 )
 from app.utils.tokens import encode_auth_token, decode_auth_token
@@ -58,10 +59,10 @@ def login():
             "Status": "error",
             "Message": "Invalid username or password"
         }, 400
-    token = encode_auth_token(user.id)
+    access_token = create_access_token(identity=user.id)
     return {
         "Status": "OK",
-        "Token": token
+        "access_token": access_token
     }, 200
 
 
@@ -96,29 +97,12 @@ def logout():
 
 
 @bp.route('/me')
+@jwt_required()
 def user_details():
-    auth_header = request.headers.get('Authorization')
-    if auth_header is None:
-        return {
-            "Status": "error",
-            "Message": "Please provide a valid authentication token"
-        }, 401
-    try:
-        auth_token = auth_header.split(" ")[1]
-    except IndexError:
-        return {
-            "Status": "error",
-            "Message": "Use a valid naming convention for the Authorization header"
-        }, 401
-    resp = decode_auth_token(auth_token)
-    if isinstance(resp, int):
-        user = User.query.get(resp)
-        return {
-            "id": user.id,
-            "email": user.email,
-            "username":user.username
-        }, 200
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
     return {
-        "Status": "error",
-        "Message": resp
-    }, 400
+        "id": user.id,
+        "email": user.email,
+        "username":user.username
+    }, 200
