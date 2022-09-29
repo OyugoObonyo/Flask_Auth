@@ -6,12 +6,12 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     get_jwt_identity,
-    jwt_required
+    jwt_required,
 )
 from app.utils.tokens import encode_auth_token, decode_auth_token
 
 
-@bp.route("/register", methods=['POST'])
+@bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
     try:
@@ -21,88 +21,59 @@ def register():
     except KeyError:
         return {
             "Status": "error",
-            "Message": "Email, username or password cannot be blank"
+            "Message": "Email, username or password cannot be blank",
         }, 400
-    user = User.query.filter_by(email=data.get('email')).first()
+    user = User.query.filter_by(email=data.get("email")).first()
     if user is not None:
-        return {
-            "Status": "error",
-            "Message": "User already exists"
-        }, 400
-    user = User(
-        email = email,
-        password= password,
-        username=username
-    )
+        return {"Status": "error", "Message": "User already exists"}, 400
+    user = User(email=email, password=password, username=username)
     db.session.add(user)
     db.session.commit()
-    return {
-        "Status": "OK",
-        "Message": "User successfully registered"
-    }, 201
+    return {"Status": "OK", "Message": "User successfully registered"}, 201
 
 
-@bp.route("/login", methods=['POST'])
+@bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
     try:
         email = data["email"]
         password = data["password"]
     except KeyError:
-        return {
-            "Status": "error",
-            "Message": "Email or password cannot be blank"
-        }, 400
+        return {"Status": "error", "Message": "Email or password cannot be blank"}, 400
     user = User.query.filter_by(email=email).first()
     if user is None or not user.check_password(password):
-        return {
-            "Status": "error",
-            "Message": "Invalid username or password"
-        }, 400
+        return {"Status": "error", "Message": "Invalid username or password"}, 400
     access_token = create_access_token(identity=user.id)
-    return {
-        "Status": "OK",
-        "access_token": access_token
-    }, 200
+    return {"Status": "OK", "access_token": access_token}, 200
 
 
-@bp.route("/logout", methods=['POST'])
+@bp.route("/logout", methods=["POST"])
 def logout():
-    auth_header = request.headers.get('Authorization')
+    auth_header = request.headers.get("Authorization")
     if auth_header is None:
         return {
             "Status": "error",
-            "Message": "Please provide a valid authentication token"
+            "Message": "Please provide a valid authentication token",
         }, 401
     try:
         auth_token = auth_header.split(" ")[1]
     except IndexError:
         return {
             "Status": "error",
-            "Message": "Use a valid naming convention for the Authorization header"
+            "Message": "Use a valid naming convention for the Authorization header",
         }, 401
     resp = decode_auth_token(auth_token)
     if not isinstance(resp, str):
         blacklisted_token = BlacklistedToken(auth_token)
         db.session.add(blacklisted_token)
         db.session.commit()
-        return {
-            "Status": "OK",
-            "Message": "User logged out successfully"
-        }, 200
-    return {
-        "Status": "error",
-        "Message": resp
-    }, 400
+        return {"Status": "OK", "Message": "User logged out successfully"}, 200
+    return {"Status": "error", "Message": resp}, 400
 
 
-@bp.route('/me')
+@bp.route("/me")
 @jwt_required()
 def user_details():
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
-    return {
-        "id": user.id,
-        "email": user.email,
-        "username":user.username
-    }, 200
+    return {"id": user.id, "email": user.email, "username": user.username}, 200

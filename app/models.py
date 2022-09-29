@@ -5,7 +5,7 @@ import uuid
 
 
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     username = email = db.Column(db.String(50), unique=True, nullable=False)
@@ -23,11 +23,11 @@ class User(db.Model):
 
     @property
     def password(self):
-        raise AttributeError('Password not accessible')
+        raise AttributeError("Password not accessible")
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
     def set_password(self, password):
         password_hash = generate_password_hash(password)
         return password_hash
@@ -40,7 +40,8 @@ class BlacklistedToken(db.Model):
     """
     Token Model for storing JWT tokens
     """
-    __tablename__ = 'blacklist_tokens'
+
+    __tablename__ = "blacklist_tokens"
 
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(500), unique=True, nullable=False)
@@ -52,8 +53,10 @@ class BlacklistedToken(db.Model):
 
     @staticmethod
     def is_blacklisted(auth_token):
-        blacklisted_token = BlacklistedToken.query.filter_by(token=str(auth_token)).first()
+        blacklisted_token = BlacklistedToken.query.filter_by(
+            token=str(auth_token)
+        ).first()
         return blacklisted_token is not None
 
     def __repr__(self):
-        return f'{self.token}'
+        return f"{self.token}"
