@@ -2,6 +2,7 @@ import os
 
 
 class Config(object):
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TESTING = False
 
