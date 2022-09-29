@@ -7,3 +7,4 @@
 - Check Microservices book
 - Set up CI/CD Wokflow
 - Leveraging Pulumi as Infrastructure-as-code
+- Increasing maximum length of characters per line on linter
