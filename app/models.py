@@ -1,6 +1,8 @@
-from app import db
-from werkzeug.security import generate_password_hash, check_password_hash
+from app import db, jwt
 from datetime import datetime
+from flask_jwt_extended import get_current_user
+from sqlalchemy.dialects.postgresql import UUID
+from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 
 
@@ -10,7 +12,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = email = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    public_id = db.Column(db.String(50), unique=True)
+    public_id = db.Column(UUID(as_uuid=True), default=uuid.uuid4)
     password_hash = db.Column(db.String(128))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -18,7 +20,6 @@ class User(db.Model):
     def __init__(self, username, email, password):
         self.email = email
         self.username = username
-        self.public_id = uuid.uuid4().hex
         self.password_hash = self.set_password(password)
 
     @property
@@ -36,27 +37,37 @@ class User(db.Model):
         return f"{self.email}"
 
 
-class BlacklistedToken(db.Model):
+class BlockedToken(db.Model):
     """
     Token Model for storing JWT tokens
     """
 
-    __tablename__ = "blacklist_tokens"
+    __tablename__ = "blocked_tokens"
 
     id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(500), unique=True, nullable=False)
-    blacklisted_on = db.Column(db.DateTime, nullable=False)
+    jti = db.Column(db.String(36), index=True, nullable=False)
+    token_type = db.Column(db.String(16), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(
+        db.ForeignKey('users.id'),
+        default=lambda: get_current_user().id,
+        nullable=False,
+    )
 
-    def __init__(self, token):
-        self.token = token
-        self.blacklisted_on = datetime.now()
+    # user_id and token_type are optional and they've
+    # been added to audit the FE logic
 
-    @staticmethod
-    def is_blacklisted(auth_token):
-        blacklisted_token = BlacklistedToken.query.filter_by(
-            token=str(auth_token)
-        ).first()
-        return blacklisted_token is not None
+    def __init__(self, jti, token_type):
+        self.jti = jti
+        self.token_type = token_type
+        self.created_at = datetime.now()
 
     def __repr__(self):
         return f"{self.token}"
+
+
+@jwt.token_in_blocklist_loader
+def check_if_token_is_blocked(header, payload):
+    jti = payload["jti"]
+    token = BlockedToken.query.filter_by(jti=jti).scalar()
+    return token is not None
