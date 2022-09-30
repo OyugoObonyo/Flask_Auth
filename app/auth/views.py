@@ -1,14 +1,13 @@
 from app import db
 from app.auth import bp
-from app.models import BlacklistedToken, User
+from app.models import BlockedToken, User
 from flask import request
 from flask_jwt_extended import (
     create_access_token,
-    create_refresh_token,
+    get_jwt,
     get_jwt_identity,
     jwt_required,
 )
-from app.utils.tokens import encode_auth_token, decode_auth_token
 
 
 @bp.route("/register", methods=["POST"])
@@ -47,28 +46,16 @@ def login():
     return {"Status": "OK", "access_token": access_token}, 200
 
 
-@bp.route("/logout", methods=["POST"])
+@bp.route("/logout", methods=["DELETE"])
+@jwt_required()
 def logout():
-    auth_header = request.headers.get("Authorization")
-    if auth_header is None:
-        return {
-            "Status": "error",
-            "Message": "Please provide a valid authentication token",
-        }, 401
-    try:
-        auth_token = auth_header.split(" ")[1]
-    except IndexError:
-        return {
-            "Status": "error",
-            "Message": "Use a valid naming convention for the Authorization header",
-        }, 401
-    resp = decode_auth_token(auth_token)
-    if not isinstance(resp, str):
-        blacklisted_token = BlacklistedToken(auth_token)
-        db.session.add(blacklisted_token)
-        db.session.commit()
-        return {"Status": "OK", "Message": "User logged out successfully"}, 200
-    return {"Status": "error", "Message": resp}, 400
+    token = get_jwt()
+    jti = token["jti"]
+    token_type = token["type"]
+    blocked_token = BlockedToken(jti=jti, token_type=token_type)
+    db.session.add(blocked_token)
+    db.session.commit()
+    return {"Status": "OK", "Message": "User logged out successfully"}, 200
 
 
 @bp.route("/me")
