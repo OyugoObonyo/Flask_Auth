@@ -8,3 +8,8 @@
 - Set up CI/CD Wokflow
 - Leveraging Pulumi as Infrastructure-as-code
 - Increasing maximum length of characters per line on linter
+- Make File for running migrations and linting
+
+
+READS:
+- JWT Security: https://betterprogramming.pub/should-we-store-tokens-in-db-af30212b7f22
