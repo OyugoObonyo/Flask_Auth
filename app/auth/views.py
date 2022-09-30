@@ -1,4 +1,4 @@
-from app import db
+from app import db, jwt
 from app.auth import bp
 from app.models import BlockedToken, User
 from flask import request
@@ -56,6 +56,13 @@ def logout():
     db.session.add(blocked_token)
     db.session.commit()
     return {"Status": "OK", "Message": "User logged out successfully"}, 200
+
+
+@jwt.token_in_blocklist_loader
+def check_if_token_is_blocked(header, payload):
+    jti = payload["jti"]
+    token = BlockedToken.query.filter_by(jti=jti).scalar()
+    return token is not None
 
 
 @bp.route("/me")

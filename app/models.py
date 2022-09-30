@@ -1,4 +1,4 @@
-from app import db, jwt
+from app import db
 from datetime import datetime
 from flask_jwt_extended import get_current_user
 from sqlalchemy.dialects.postgresql import UUID
@@ -64,10 +64,3 @@ class BlockedToken(db.Model):
 
     def __repr__(self):
         return f"{self.token}"
-
-
-@jwt.token_in_blocklist_loader
-def check_if_token_is_blocked(header, payload):
-    jti = payload["jti"]
-    token = BlockedToken.query.filter_by(jti=jti).scalar()
-    return token is not None
