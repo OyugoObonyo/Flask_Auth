@@ -58,6 +58,17 @@ def logout():
     return {"Status": "OK", "Message": "User logged out successfully"}, 200
 
 
+@jwt.user_identity_loader
+def user_identity_lookup(user):
+    return user
+
+
+@jwt.user_lookup_loader
+def user_lookup_callback(header, payload):
+    identity = payload["sub"]
+    return User.query.filter_by(id=identity).first()
+
+
 @jwt.token_in_blocklist_loader
 def check_if_token_is_blocked(header, payload):
     jti = payload["jti"]
