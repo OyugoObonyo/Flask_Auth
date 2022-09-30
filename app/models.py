@@ -1,4 +1,4 @@
-from app import db
+from app import db, jwt
 from datetime import datetime
 from flask_jwt_extended import get_current_user
 from sqlalchemy.dialects.postgresql import UUID
