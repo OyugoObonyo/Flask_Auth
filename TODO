@@ -1,4 +1,3 @@
-- Revisit tokenization criteria - Misgivings
 - Experimenting class-based views in Flask
 - Handling Password and email validation
 - Write Integration test confirming db conection 
@@ -9,6 +8,7 @@
 - Leveraging Pulumi as Infrastructure-as-code
 - Increasing maximum length of characters per line on linter
 - Make File for running migrations and linting
+- Endpoints to add -  Forgot password, delete user account
 
 
 READS:
