@@ -61,6 +61,3 @@ class BlockedToken(db.Model):
         self.jti = jti
         self.token_type = token_type
         self.created_at = datetime.now()
-
-    def __repr__(self):
-        return f"{self.token}"
