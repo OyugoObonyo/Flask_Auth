@@ -10,6 +10,7 @@ import pytest
 def app():
     app = create_app(config_class=TestingConfig)
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("TEST_DATABASE_URL")
+    app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
     return app
 
 
