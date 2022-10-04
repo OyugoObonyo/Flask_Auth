@@ -8,8 +8,8 @@ def test_full_registration(client):
         },
     )
     assert response.status_code == 201
-    assert response.json["Message"] == "User successfully registered"
-    assert response.json["Status"] == "OK"
+    assert response.json["message"] == "User successfully registered"
+    assert response.json["status"] == "OK"
 
 
 def test_register_without_email(client):
@@ -17,8 +17,8 @@ def test_register_without_email(client):
         "/api/auth/register", json={"username": "username", "password": "password"}
     )
     assert response.status_code == 400
-    assert response.json["Message"] == "Email, username or password cannot be blank"
-    assert response.json["Status"] == "error"
+    assert response.json["message"] == "Email, username or password cannot be blank"
+    assert response.json["status"] == "error"
 
 
 def test_register_without_username(client):
@@ -26,8 +26,8 @@ def test_register_without_username(client):
         "/api/auth/register", json={"email": "user@mai.com", "password": "password"}
     )
     assert response.status_code == 400
-    assert response.json["Message"] == "Email, username or password cannot be blank"
-    assert response.json["Status"] == "error"
+    assert response.json["message"] == "Email, username or password cannot be blank"
+    assert response.json["status"] == "error"
 
 
 def test_register_without_password(client):
@@ -35,8 +35,8 @@ def test_register_without_password(client):
         "/api/auth/register", json={"email": "user2@mail.com", "username": "username"}
     )
     assert response.status_code == 400
-    assert response.json["Message"] == "Email, username or password cannot be blank"
-    assert response.json["Status"] == "error"
+    assert response.json["message"] == "Email, username or password cannot be blank"
+    assert response.json["status"] == "error"
 
 
 def test_register_already_existing_user(client, user):
@@ -49,5 +49,5 @@ def test_register_already_existing_user(client, user):
         },
     )
     assert response.status_code == 400
-    assert response.json["Message"] == "User already exists"
-    assert response.json["Status"] == "error"
+    assert response.json["message"] == "User already exists"
+    assert response.json["status"] == "error"
