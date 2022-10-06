@@ -1,6 +1,5 @@
 from app import db, jwt
 from datetime import datetime
-from flask_jwt_extended import get_current_user
 from sqlalchemy.dialects.postgresql import UUID
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
@@ -48,14 +47,6 @@ class BlockedToken(db.Model):
     jti = db.Column(db.String(36), index=True, nullable=False)
     token_type = db.Column(db.String(16), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
-    user_id = db.Column(
-        db.ForeignKey('users.id'),
-        default=lambda: get_current_user().id,
-        nullable=False,
-    )
-
-    # user_id and token_type are optional and they've
-    # been added to audit the FE logic
 
     def __init__(self, jti, token_type):
         self.jti = jti
