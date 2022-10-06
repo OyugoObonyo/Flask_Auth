@@ -44,3 +44,11 @@ def handle_expired_token_response(header, payload):
         "message": "token is expired",
         "status": "error"
     }
+
+
+@jwt.unauthorized_loader
+def handle_missing_jwt(error):
+    return {
+        "status": "error",
+        "message": "Please provide a valid authorization header"
+    }, 401
