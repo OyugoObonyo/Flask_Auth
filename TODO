@@ -9,6 +9,7 @@
 - Increasing maximum length of characters per line on linter
 - Make File for running migrations and linting
 - Endpoints to add -  Forgot password, delete user account
+- Revisit scalar() method on sqlalchemy object and pretty printed flask-sqlalchemy course
 
 
 READS:
