@@ -1,4 +1,3 @@
-- Experimenting class-based views in Flask
 - Handling Password and email validation
 - Write Integration test confirming db conection 
 - Add save() method to User model AND CREATED_AT Fields - Match fields with fields in django application

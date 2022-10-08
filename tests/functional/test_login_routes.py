@@ -24,7 +24,7 @@ def test_login_with_inexistent_email(client):
     )
     assert response.status_code == 401
     assert response.json["status"] == "error"
-    assert response.json["message"] == "Invalid username or password"
+    assert response.json["message"] == "Invalid email or password"
     with pytest.raises(KeyError):
         assert response.json["access_token"]
         assert response.json["refresh_token"]
@@ -36,7 +36,7 @@ def test_login_with_wrong_password(client, user):
     )
     assert response.status_code == 401
     assert response.json["status"] == "error"
-    assert response.json["message"] == "Invalid username or password"
+    assert response.json["message"] == "Invalid email or password"
     with pytest.raises(KeyError):
         assert response.json["access_token"]
         assert response.json["refresh_token"]

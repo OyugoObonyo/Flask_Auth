@@ -46,7 +46,7 @@ def login():
         return {"status": "error", "message": "Email or password cannot be blank"}, 401
     user = User.query.filter_by(email=email).first()
     if user is None or not user.check_password(password):
-        return {"status": "error", "message": "Invalid username or password"}, 401
+        return {"status": "error", "message": "Invalid email or password"}, 401
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
     return {
