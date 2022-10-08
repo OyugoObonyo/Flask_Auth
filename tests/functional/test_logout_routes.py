@@ -1,60 +1,65 @@
 def test_full_logout(client, user):
-    login_response = client.post("/api/auth/login", json = {
-        "email" : "user@mail.com",
-        "username": "username",
-        "password": "user_password"
-    })
-    token = login_response.json["Token"]
-    headers = {
-        'Authorization': f'Bearer {token}'
-    }
+    login_response = client.post(
+        "/api/auth/login",
+        json={
+            "email": "user@mail.com",
+            "username": "username",
+            "password": "user_password",
+        },
+    )
+    token = login_response.json["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
     response = client.post("/api/auth/logout", headers=headers)
     assert response.status_code == 200
-    assert response.json["Status"] == "OK"
-    assert response.json["Message"] == "User logged out successfully"
+    assert response.json["status"] == "OK"
+    assert response.json["message"] == "User logged out successfully"
+
 
 def test_logout_without_token(client):
     response = client.post("/api/auth/logout")
     assert response.status_code == 401
-    assert response.json["Status"] == "error"
-    assert response.json["Message"] == "Please provide a valid authentication token"
+    assert response.json["status"] == "error"
+    assert response.json["message"] == "Please provide a valid authorization header"
+
 
 def test_logout_with_invalid_header(client, user):
-    login_response = client.post("/api/auth/login", json = {
-        "email" : "user@mail.com",
-        "uername": "username",
-        "password": "user_password"
-    })
-    token = login_response.json["Token"]
-    headers = {
-        'Authorization': token
-    }
+    login_response = client.post(
+        "/api/auth/login",
+        json={
+            "email": "user@mail.com",
+            "uername": "username",
+            "password": "user_password",
+        },
+    )
+    token = login_response.json["access_token"]
+    headers = {"Authorization": token}
     response = client.post("/api/auth/logout", headers=headers)
     assert response.status_code == 401
-    assert response.json["Status"] == "error"
-    assert response.json["Message"] == "Use a valid naming convention for the Authorization header"
+    assert response.json["status"] == "error"
+    assert response.json["message"] == "Please provide a valid authorization header"
+
 
 def test_logout_with_invalid_token(client):
-    headers = {
-        'Authorization': 'Bearer anInvalidToken'
-    }
+    headers = {"Authorization": "Bearer anInvalidToken"}
     response = client.post("/api/auth/logout", headers=headers)
-    assert response.status_code == 400
-    assert response.json["Status"] == "error"
-    assert response.json["Message"] == "Invalid token"
+    assert response.status_code == 401
+    assert response.json["status"] == "error"
+    assert response.json["message"] == "token is invalid"
 
-def test_logout_with_expired_token(client, user):
-    login_response = client.post("/api/auth/login", json = {
-        "email" : "user@mail.com",
-        "username": "username",
-        "password": "user_password"
-    })
-    token = login_response.json["Token"]
-    headers = {
-        'Authorization': f'Bearer {token}'
-    }
+
+def test_logout_with_revoked_token(client, user):
+    login_response = client.post(
+        "/api/auth/login",
+        json={
+            "email": "user@mail.com",
+            "username": "username",
+            "password": "user_password",
+        },
+    )
+    token = login_response.json["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
     client.post("/api/auth/logout", headers=headers)
     repeat_logout = client.post("/api/auth/logout", headers=headers)
-    assert repeat_logout.status_code == 400
-    assert repeat_logout.json["Status"] == "error"
-    assert repeat_logout.json["Message"] == "Token expired. Please log in again"
+    assert repeat_logout.status_code == 401
+    assert repeat_logout.json["status"] == "error"
+    assert repeat_logout.json["message"] == "token has already been revoked"

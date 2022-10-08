@@ -10,15 +10,18 @@ import pytest
 def app():
     app = create_app(config_class=TestingConfig)
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("TEST_DATABASE_URL")
+    app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
     return app
+
 
 @pytest.fixture(scope="session")
 def db(app):
-    _db.app = app 
+    _db.app = app
     _db.create_all()
     yield _db
     _db.session.close()
     _db.drop_all()
+
 
 @pytest.fixture(scope="session")
 def client(app):
@@ -31,13 +34,10 @@ def client(app):
     _db.session.close()
     _db.drop_all()
 
+
 @pytest.fixture()
 def user(db):
-    _user = User(
-        email='user@mail.com',
-        username='username',
-        password='user_password'
-    )
+    _user = User(email="user@mail.com", username="username", password="user_password")
     db.session.add(_user)
     db.session.commit()
     retrieved_user = User.query.filter_by(email=_user.email).first()
