@@ -1,13 +1,7 @@
-from flask import Blueprint
 from app import jwt
 from app.models import User, BlockedToken
 
-bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
-from app.auth import views
-
-
-# Serves the get_current_user() function
 @jwt.user_lookup_loader
 def retrieve_current_user(header, payload):
     identity = payload["sub"]
@@ -52,3 +46,4 @@ def handle_missing_jwt(error):
         "status": "error",
         "message": "Please provide a valid authorization header"
     }, 401
+
