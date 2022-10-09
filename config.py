@@ -1,4 +1,5 @@
 from datetime import timedelta
+from re import compile
 import os
 
 
@@ -10,7 +11,8 @@ class Config(object):
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TESTING = False
-
+    USERNAME_REGEX = compile(r"")
+    PASSWORD_REGEX = compile(r"")
 
 class DevelopmentConfig(Config):
     DEBUG = True
