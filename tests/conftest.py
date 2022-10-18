@@ -30,9 +30,9 @@ def client(app):
     ctx.push()
     _db.create_all()
     yield client
-    ctx.pop()
     _db.session.close()
     _db.drop_all()
+    ctx.pop()
 
 
 @pytest.fixture()
