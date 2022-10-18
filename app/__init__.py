@@ -4,6 +4,7 @@ from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
+load_dotenv()
 db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate(render_as_batch=True)
@@ -11,7 +12,6 @@ migrate = Migrate(render_as_batch=True)
 
 def create_app(config_class):
     app = Flask(__name__)
-    load_dotenv()
     app.config.from_object(config_class)
 
     db.init_app(app)
