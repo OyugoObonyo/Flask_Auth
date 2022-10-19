@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
 from email_validator import validate_email, EmailNotValidError
+from re import compile
 from sqlalchemy.dialects.postgresql import UUID
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
@@ -26,17 +27,14 @@ class User(db.Model):
     def password(self):
         raise AttributeError("Password not accessible")
 
-    @staticmethod
-    def valid_user_email(email):
-        try:
-            email = validate_email(email).email
-        except EmailNotValidError as e:
-            return e
-        return email
-
-    @staticmethod
-    def validate_username(username):
-        pass
+    # def validate_user_details(email, username, password):
+        # try:
+            # email = validate_email(email)
+            # username = validate_username(username)
+            # password = validate_password(password)
+        # except ValidationErr as e:
+            # return e
+        # return "valid"
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
