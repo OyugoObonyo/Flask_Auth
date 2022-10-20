@@ -16,34 +16,23 @@ def test_save_user_to_db(user):
         assert user.password
 
 
-def test_user_password(user):
-    assert user.check_password("user_passworrd") is False
-    assert user.check_password("user_password") is True
-
-
 @pytest.mark.parametrize(
-    "password", "output",
+    "email, username, password, output",
     [
-        ("notavalidpassword", """
-        Password should be at least 6 characters long and must contain 1
-        """),
-        ("Astrong!Password001", "valid"),
-        ("S8ort", False),
-        ("NosPecialCharact8", True)
+        ("user@email.com", "User_99", "Astrong!Password001", "valid"),
+        ("user.com", "User_99", "Astrong!Password001",
+            "The email address is not valid. It must have exactly\
+ one @-sign."),
+        ("user@testuser.com", "User_99", "Astrong!Password001",
+            "The domain name testuser.com does not send email."),
+        ("user@email.com", "me", "Astrong!Password001",
+            "Username should be at least 3 characters long and\
+ may only contain letters, numbers, '-', '.' and '_'"),
+        ("user@email.com", "User_99", "S8ort",
+            "Password should be at least 6 characters long\
+ and must contain at least 1 uppercase letter, 1 lowercase\
+ letter and 1 number")
     ]
 )
-def test_password_validity(user, password, output): 
-    assert user.validate_password(password) is output
-
-
-@pytest.mark.parametrize(
-    "username",  "output",
-    [
-        ("me", False),
-        ("User_99", True),
-        ("peter-98.py", True),
-        ("Notauser!", False)
-    ]
-)
-def test_username_validity(user, username, output):
-    assert user.validate_username(username) is output
+def test_user_validate_details(user, email, username, password, output):
+    assert user.validate_user_details(email, username, password) == output
