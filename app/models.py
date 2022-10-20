@@ -1,8 +1,8 @@
 from app import db
 from datetime import datetime
-from email_validator import validate_email, EmailNotValidError
-from re import compile
 from sqlalchemy.dialects.postgresql import UUID
+from utils.validators import (validate_password,
+                              validate_user_email, validate_username)
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 
