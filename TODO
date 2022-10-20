@@ -1,4 +1,5 @@
 - Handling Password and email validation - might use RegEx validation for username and email validator package for emails
+- Research on whether it's smart to use raise in flask application
 - Write Integration test confirming db conection 
 - Add save() method to User model AND CREATED_AT Fields - Match fields with fields in django application
 - Making atomic database transactions in flask
