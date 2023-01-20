@@ -4,3 +4,4 @@ __pycache__/
 .coverage
 trial.py
 app.db
+.vscode/settings.json
