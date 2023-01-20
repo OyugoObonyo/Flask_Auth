@@ -1,6 +1,5 @@
 from app import db, jwt
 from datetime import datetime
-from sqlalchemy.dialects.postgresql import UUID
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 
@@ -11,7 +10,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = email = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    public_id = db.Column(UUID(as_uuid=True), default=uuid.uuid4)
+    public_id = db.Column(db.String(36))
     password_hash = db.Column(db.String(128))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -20,6 +19,7 @@ class User(db.Model):
         self.email = email
         self.username = username
         self.password_hash = self.set_password(password)
+        self.public_id = str(uuid.uuid4())
 
     @property
     def password(self):
