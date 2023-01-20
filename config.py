@@ -1,6 +1,8 @@
 from datetime import timedelta
 import os
 
+# get the app's root directory
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     # Set to True in production
@@ -14,7 +16,8 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db') or \
+        os.environ.get("DATABASE_URL")
 
 
 class TestingConfig(Config):
