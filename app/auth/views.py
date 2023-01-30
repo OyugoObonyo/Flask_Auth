@@ -1,7 +1,8 @@
 from app import db
 from app.auth import bp
+from app.auth.utils.oauth import oauth
 from app.models import BlockedToken, User
-from flask import request
+from flask import redirect, request, url_for
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -10,6 +11,9 @@ from flask_jwt_extended import (
     jwt_required
 )
 
+@bp.route('/')
+def home():
+    return "Hello index page!"
 
 @bp.route("/register", methods=["POST"])
 def register():
@@ -23,12 +27,10 @@ def register():
             "status": "error",
             "message": "Email, username or password cannot be blank",
         }, 400
-    user = User.query.filter_by(email=data.get("email")).first()
-    if user is not None:
-        return {"status": "error", "message": "User already exists"}, 400
     user = User(email=email, password=password, username=username)
-    db.session.add(user)
-    db.session.commit()
+    status = user.save()
+    if status != "success":
+        return {"status": "error", "message": status}, 400
     return {
         "status": "OK",
         "message": "User successfully registered",
@@ -55,7 +57,26 @@ def login():
         "refresh_token": refresh_token}, 200
 
 
-@bp.route("/logout", methods=["POST"])
+@bp.route('/login/google')
+def google_login():
+    redirect_uri = url_for('auth.authorize', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+@bp.route('/login/google/authorize')
+def authorize():
+    token = oauth.google.authorize_access_token()
+    print(token)
+    user_info = oauth.google.userinfo()
+    print("USER INFO: ", user_info)
+    user = User( 
+        username=user_info["name"],
+        email=user_info["email"]
+    )
+    user.save()
+    return redirect(url_for('auth.home'))
+
+
+@bp.route("/logout")
 @jwt_required()
 def logout():
     token = get_jwt()
