@@ -1,6 +1,7 @@
 from app import db, jwt
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.exc import IntegrityError
 import uuid
 
 
@@ -15,15 +16,24 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, email, password=None):
         self.email = email
         self.username = username
-        self.password_hash = self.set_password(password)
+        if password:
+            self.password_hash = self.set_password(password)
         self.public_id = str(uuid.uuid4())
 
     @property
     def password(self):
         raise AttributeError("Password not accessible")
+
+    def save(self):
+        try:
+            db.session.add(self)
+            db.session.commit()
+        except IntegrityError as e:
+            return str(e)
+        return "success"
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
