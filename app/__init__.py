@@ -1,4 +1,3 @@
-from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 from flask import Flask
 from flask_jwt_extended import JWTManager
@@ -8,7 +7,6 @@ from flask_migrate import Migrate
 db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate(render_as_batch=True)
-oauth = OAuth()
 
 
 def create_app(config_class):
@@ -19,7 +17,6 @@ def create_app(config_class):
     db.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
-    oauth.init_app(app)
 
     from app.auth import bp as auth_bp
 

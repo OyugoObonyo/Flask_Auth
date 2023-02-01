@@ -1,6 +1,5 @@
 from app import db
 from app.auth import bp
-from app.auth.utils.oauth import oauth
 from app.models import BlockedToken, User
 from flask import redirect, request, url_for
 from flask_jwt_extended import (
@@ -57,23 +56,23 @@ def login():
         "refresh_token": refresh_token}, 200
 
 
-@bp.route('/login/google')
-def google_login():
-    redirect_uri = url_for('auth.authorize', _external=True)
-    return oauth.google.authorize_redirect(redirect_uri)
+# @bp.route('/login/google')
+# def google_login():
+#     redirect_uri = url_for('auth.authorize', _external=True)
+#     return oauth.google.authorize_redirect(redirect_uri)
 
-@bp.route('/login/google/authorize')
-def authorize():
-    token = oauth.google.authorize_access_token()
-    print(token)
-    user_info = oauth.google.userinfo()
-    print("USER INFO: ", user_info)
-    user = User( 
-        username=user_info["name"],
-        email=user_info["email"]
-    )
-    user.save()
-    return redirect(url_for('auth.home'))
+# @bp.route('/login/google/authorize')
+# def authorize():
+#     token = oauth.google.authorize_access_token()
+#     print(token)
+#     user_info = oauth.google.userinfo()
+#     print("USER INFO: ", user_info)
+#     user = User( 
+#         username=user_info["name"],
+#         email=user_info["email"]
+#     )
+#     user.save()
+#     return redirect(url_for('auth.home'))
 
 
 @bp.route("/logout")
