@@ -5,3 +5,5 @@ __pycache__/
 trial.py
 app.db
 .vscode/settings.json
+myclient.json
+realm-export.json
